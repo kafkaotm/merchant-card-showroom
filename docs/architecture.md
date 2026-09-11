@@ -108,6 +108,18 @@ components.
   "schema field type: ref" mechanism the registry understands. There is
   exactly one relation in this domain; generalizing for hypothetical
   future relations before a second one exists is speculative.
+- **Debounce the localStorage write, not the store update.** The Editor
+  originally called `persistence.save()` synchronously on every `input`
+  event — correct, but one write per keystroke. `detail.ts` now wraps
+  only that call in `debounce()` (`src/core/debounce.ts`); `store.set()`
+  stays synchronous so the card still updates live every keystroke.
+  Debounce lives as a generic, independently-tested utility rather than
+  being built into `local-storage-persistence.ts` itself, specifically
+  to avoid touching that module's already-tested synchronous
+  save-then-load contract for a concern (call-frequency) that belongs to
+  the caller, not the adapter. Accepted tradeoff: a pending write is
+  lost if the page closes within the debounce window of the last edit —
+  no flush-on-unload safety net built for this scope.
 
 ## Roadmap
 
