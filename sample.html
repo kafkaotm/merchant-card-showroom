@@ -6,17 +6,22 @@
   </head>
   <body>
     <!--
-      Zero-build usage sample: open this file directly, or serve it statically.
-      Loads only the built card library (dist/momo-cards.js) — no app,
-      no store, no framework runtime. Run `npm run build:lib` first.
+      Zero-build, zero-server usage sample: run `npm run build:lib` once,
+      then just double-click this file — no dev server needed.
+
+      Loads dist/momo-cards.iife.js, not the ES build (dist/momo-cards.js).
+      A `<script type="module">` fetching another module from a file://
+      page is blocked by CORS in Chrome; a classic (non-module) <script>
+      is not. IIFE is what makes true double-click-to-open work, not just
+      "open via a static server" — see vite.lib.config.ts.
 
       Both cards below render the exact same product record — this is
       the "view variant" extension axis: one schema, two renderers.
       List additionally emits card-follow / card-add-to-cart events,
       logged below instead of wired to anything real.
     -->
-    <script type="module" src="./dist/momo-cards.js"></script>
-    <script type="module">
+    <script src="./dist/momo-cards.iife.js"></script>
+    <script>
       window.addEventListener("card-follow", () => console.log("card-follow"));
       window.addEventListener("card-add-to-cart", () => console.log("card-add-to-cart"));
     </script>
