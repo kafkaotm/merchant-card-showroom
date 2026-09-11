@@ -1,4 +1,5 @@
 import "../cards"; // registers <momo-grid-card>, <momo-list-card> as a side effect
+import "./showroom.css";
 import { createCardRegistry } from "../core/card-registry";
 import { createEntityStore } from "../core/entity-store";
 import { createLocalStoragePersistence } from "../core/local-storage-persistence";

@@ -4,12 +4,43 @@ import { BaseProductCard } from "./base-card";
 
 @customElement("momo-list-card")
 export class MomoListCard extends BaseProductCard {
-  static styles = css`
-    :host {
-      display: block;
-      font-family: system-ui, sans-serif;
-    }
-  `;
+  static styles = [
+    BaseProductCard.styles,
+    css`
+      :host {
+        width: 100%;
+      }
+      article {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+      h3 {
+        flex: 1 1 260px;
+        margin: 0;
+      }
+      .rating,
+      .price {
+        margin: 0;
+        white-space: nowrap;
+      }
+      button {
+        padding: 8px 16px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background: #fff;
+        font-size: 13px;
+        cursor: pointer;
+      }
+      button[data-action="add-to-cart"] {
+        background: #ff5678;
+        border-color: #ff5678;
+        color: #fff;
+        font-weight: 600;
+      }
+    `,
+  ];
 
   private emit(name: string) {
     this.dispatchEvent(new CustomEvent(name, { bubbles: true, composed: true }));

@@ -34,6 +34,7 @@ export function renderDetail(
   applyProductAttributes(card, current);
 
   const editorContainer = document.createElement("div");
+  editorContainer.className = "editor-form";
   renderEditor(editorContainer, schema, current, (key, newValue) => {
     const updated = { ...store.get(productId)!, [key]: newValue };
     store.set(productId, updated);
