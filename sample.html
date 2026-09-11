@@ -10,9 +10,31 @@
       Loads only the built card library (dist/momo-cards.js) — no app,
       no store, no framework runtime. Run `npm run build:lib` first.
 
-      Card tags land here once the Grid/List components exist (next TDD
-      cycles). Left empty on purpose rather than faked.
+      Both cards below render the exact same product record — this is
+      the "view variant" extension axis: one schema, two renderers.
+      List additionally emits card-follow / card-add-to-cart events,
+      logged below instead of wired to anything real.
     -->
     <script type="module" src="./dist/momo-cards.js"></script>
+    <script type="module">
+      window.addEventListener("card-follow", () => console.log("card-follow"));
+      window.addEventListener("card-add-to-cart", () => console.log("card-add-to-cart"));
+    </script>
+
+    <h1>Grid view</h1>
+    <momo-grid-card
+      product-title="ASUS 華碩 15.6吋Core7輕薄筆電-藍 (VivoBook X1504VA/Core7-150U/16G/1TB SSD/W11)"
+      price="27999"
+      rating="4.5"
+      review-count="364"
+    ></momo-grid-card>
+
+    <h1>List view</h1>
+    <momo-list-card
+      product-title="ASUS 華碩 15.6吋Core7輕薄筆電-藍 (VivoBook X1504VA/Core7-150U/16G/1TB SSD/W11)"
+      price="27999"
+      rating="4.5"
+      review-count="364"
+    ></momo-list-card>
   </body>
 </html>
