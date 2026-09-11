@@ -16,5 +16,8 @@ export function createCardRegistry<TSchema, TView>() {
     get(type: string): CardDefinition<TSchema, TView> | undefined {
       return definitions.get(type);
     },
+    getView(type: string, viewName: string): TView | undefined {
+      return definitions.get(type)?.views[viewName];
+    },
   };
 }
