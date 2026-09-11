@@ -4,9 +4,14 @@ import type { FieldSchema } from "../core/field-schema";
 import type { Product } from "../core/product";
 import { applyProductAttributes } from "./gallery";
 import { renderEditor } from "./editor";
+import { debounce } from "../core/debounce";
 
 type Store = ReturnType<typeof createEntityStore<Product>>;
 type Persistence = ReturnType<typeof createLocalStoragePersistence<Product>>;
+
+// Exported so tests advance fake timers by the same value this module
+// actually uses, instead of duplicating the number.
+export const PERSIST_DEBOUNCE_MS = 300;
 
 // One card + its schema-driven editor, wired to a single product id.
 //
@@ -33,12 +38,22 @@ export function renderDetail(
   const card = document.createElement(tagName);
   applyProductAttributes(card, current);
 
+  // Only the localStorage write is debounced — store.set() below stays
+  // synchronous so the card (and anything else subscribed) still updates
+  // on every keystroke. Note: a pending write is lost if the page closes
+  // within PERSIST_DEBOUNCE_MS of the last edit; accepted for this scope,
+  // see docs/architecture.md.
+  const debouncedSave = debounce(
+    (id: string, value: Product) => persistence.save(id, value),
+    PERSIST_DEBOUNCE_MS,
+  );
+
   const editorContainer = document.createElement("div");
   editorContainer.className = "editor-form";
   renderEditor(editorContainer, schema, current, (key, newValue) => {
     const updated = { ...store.get(productId)!, [key]: newValue };
     store.set(productId, updated);
-    persistence.save(productId, updated);
+    debouncedSave(productId, updated);
   });
 
   store.subscribe(productId, (updated) => {
