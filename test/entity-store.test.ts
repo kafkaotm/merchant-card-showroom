@@ -20,4 +20,37 @@ describe("createEntityStore", () => {
 
     expect(store.get("p1")).toEqual({ id: "p1", title: "ASUS 筆電" });
   });
+
+  describe("subscribe", () => {
+    it("notifies a subscriber of that id when set() is called", () => {
+      const store = createEntityStore<Product>();
+      const received: Product[] = [];
+      store.subscribe("p1", (value) => received.push(value));
+
+      store.set("p1", { id: "p1", title: "ASUS 筆電" });
+
+      expect(received).toEqual([{ id: "p1", title: "ASUS 筆電" }]);
+    });
+
+    it("does not notify a subscriber listening to a different id", () => {
+      const store = createEntityStore<Product>();
+      const received: Product[] = [];
+      store.subscribe("p2", (value) => received.push(value));
+
+      store.set("p1", { id: "p1", title: "ASUS 筆電" });
+
+      expect(received).toEqual([]);
+    });
+
+    it("stops notifying once unsubscribed", () => {
+      const store = createEntityStore<Product>();
+      const received: Product[] = [];
+      const unsubscribe = store.subscribe("p1", (value) => received.push(value));
+
+      unsubscribe();
+      store.set("p1", { id: "p1", title: "ASUS 筆電" });
+
+      expect(received).toEqual([]);
+    });
+  });
 });
