@@ -5,12 +5,14 @@ import type { FieldSchema } from "../core/field-schema";
 // value already coerced to the field's declared type (number fields never
 // hand the caller a string), so callers can merge it straight into their
 // data without re-parsing.
-export function renderEditor(
+export function renderEditor<T extends object>(
   container: HTMLElement,
   schema: FieldSchema[],
-  value: Record<string, unknown>,
+  value: T,
   onChange: (key: string, newValue: string | number) => void,
 ): void {
+  const values = value as Record<string, unknown>;
+
   container.replaceChildren(
     ...schema.map((field) => {
       const label = document.createElement("label");
@@ -18,7 +20,7 @@ export function renderEditor(
 
       const input = document.createElement("input");
       input.type = field.type === "number" ? "number" : "text";
-      input.value = String(value[field.key] ?? "");
+      input.value = String(values[field.key] ?? "");
       input.addEventListener("input", () => {
         onChange(field.key, field.type === "number" ? Number(input.value) : input.value);
       });
