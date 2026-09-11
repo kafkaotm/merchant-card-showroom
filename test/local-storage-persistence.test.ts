@@ -25,6 +25,13 @@ describe("createLocalStoragePersistence", () => {
     expect(persistence.load("p1")).toEqual({ id: "p1", title: "ASUS 筆電" });
   });
 
+  it("returns undefined instead of throwing when stored value is malformed JSON", () => {
+    const persistence = createLocalStoragePersistence<Product>("products");
+    localStorage.setItem("products:p1", "{not valid json");
+
+    expect(persistence.load("p1")).toBeUndefined();
+  });
+
   it("namespaces keys so two persistence instances don't collide", () => {
     const products = createLocalStoragePersistence<Product>("products");
     const deals = createLocalStoragePersistence<Product>("deals");

@@ -8,7 +8,13 @@ export function createLocalStoragePersistence<T>(namespace: string) {
     load(id: string): T | undefined {
       const raw = localStorage.getItem(keyFor(id));
       if (raw === null) return undefined;
-      return JSON.parse(raw) as T;
+
+      try {
+        return JSON.parse(raw) as T;
+      } catch (error) {
+        console.warn(`Discarding corrupted localStorage value for "${keyFor(id)}".`, error);
+        return undefined;
+      }
     },
   };
 }
