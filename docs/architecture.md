@@ -117,6 +117,19 @@ components.
   risk (store, registry, resolver, validation). No e2e/visual regression
   suite; not worth it at this scope, called out explicitly rather than
   silently skipped.
+- **Availability/stock-status field (貨態) not implemented.** Real momo
+  grid cards sometimes replace the price entirely with a status line —
+  "售完補貨中" (sold out, restocking) or "10/01 00:00 開賣" (presale, with a
+  timestamp) — instead of showing a price at all. Current `BaseProductCard`
+  has no field for this. Extension point when it's built: an
+  `availability: "in-stock" | "restocking" | "presale"` property (plus
+  `availabilityAt` for the presale timestamp) belongs on `BaseProductCard`
+  itself, since it's the same product-data axis as price/rating (Grid and
+  List must both reflect it identically); the decision of *whether to
+  render price or status text* is a per-view concern and stays local to
+  each card's own `render()`, not lifted into the base. List's
+  "add to cart" button would also need to disable/hide when availability
+  isn't `in-stock` — a List-specific behavior branch, not a base concern.
 - **Untested: multiple simultaneous subscribers on the same entity id.**
   `entity-store`'s fan-out (`listeners.get(id)?.forEach(...)`) is
   Set-based and should support any number of listeners per id, but no
