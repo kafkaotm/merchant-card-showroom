@@ -120,6 +120,17 @@ components.
   the caller, not the adapter. Accepted tradeoff: a pending write is
   lost if the page closes within the debounce window of the last edit —
   no flush-on-unload safety net built for this scope.
+- **Cards react to nothing on their own; the app supplies the reaction.**
+  `card-follow`/`card-add-to-cart` bubble up from List and, until now,
+  had no listener anywhere in the real app (only `sample.html` logged
+  them to console). `attachActionFeedback` (`src/showroom/action-feedback.ts`)
+  is the app's minimal reaction — a sticky status line, not a real
+  cart/follow-list feature. One listener on the app root catches every
+  card via event bubbling, current or future, rather than each card
+  needing individual wiring. Kept deliberately shallow: the brief doesn't
+  ask for real cart/follow state, and a card owning that state itself
+  would contradict the "cards only emit events" boundary already
+  established for these two events.
 
 ## Roadmap
 
@@ -150,19 +161,25 @@ components.
   each card's own `render()`, not lifted into the base. List's
   "add to cart" button would also need to disable/hide when availability
   isn't `in-stock` — a List-specific behavior branch, not a base concern.
-- **Gallery and Detail don't cross-sync live within one page session.**
-  Editing a product in the Detail view updates that view's own card
-  immediately (verified live in a browser) and persists to localStorage,
-  but the Gallery's rendering of the same product — built once at boot
-  from a snapshot array, not subscribed to the store — won't show the
-  edit until the page reloads and rehydrates from persistence. Confirmed
-  this exact behavior live: edited price in Detail, Gallery kept the old
-  value; reloaded, both showed the new one. Real state-consistency gap
-  *within a session*, left as-is deliberately — fixing it means
-  `renderGallery` subscribing per rendered card, which changes its
-  existing (tested) contract from "takes a products array" to "takes a
-  live store", for a scenario (edit in Detail, watch Gallery update
-  without reloading) this project doesn't otherwise need.
+- **Gallery now cross-syncs live with Detail edits (revised decision).**
+  This was originally left as a documented gap: editing a product in
+  Detail updated only Detail's own card, not Gallery's copy, within the
+  same session. The reasoning at the time was that fixing it would
+  change `renderGallery`'s tested contract for a scenario the project
+  "didn't otherwise need." That reasoning didn't hold up once actually
+  questioned: Gallery and Detail sit on the *same page*, stacked
+  vertically, not on separate routes a user navigates between — so the
+  inconsistency was visible immediately, not an edge case. `renderGallery`
+  now also takes the `store` and subscribes each rendered card to its own
+  id (`createCardElement` in `gallery.ts`), reusing the exact
+  subscribe/`applyProductAttributes` mechanism `detail.ts` already
+  established. No unsubscribe/dispose was added: `renderGallery` is
+  called exactly once at app boot and never re-rendered, so there is no
+  teardown moment for a subscription to leak past — building dispose
+  plumbing for a re-render scenario that doesn't exist in this app would
+  itself have been speculative. Verified live: editing price in Detail
+  now updates Detail's card, both of Gallery's cards (grid and list) for
+  that product, immediately, no reload needed.
 - **Untested: multiple simultaneous subscribers on the same entity id.**
   `entity-store`'s fan-out (`listeners.get(id)?.forEach(...)`) is
   Set-based and should support any number of listeners per id, but no

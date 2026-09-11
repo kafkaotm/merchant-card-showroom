@@ -8,6 +8,7 @@ import { standardProductSchema } from "../cards/standard-product.schema";
 import productsData from "../../mock-data/products.json";
 import { renderGallery } from "./gallery";
 import { renderDetail } from "./detail";
+import { attachActionFeedback } from "./action-feedback";
 
 const registry = createCardRegistry<typeof standardProductSchema, string>();
 registry.register("standard-product", {
@@ -27,6 +28,10 @@ const hydratedProducts = mockProducts.map((mock) => productStore.get(mock.id)!);
 
 const app = document.querySelector<HTMLDivElement>("#app")!;
 
+const statusEl = document.createElement("div");
+statusEl.className = "action-status";
+attachActionFeedback(app, statusEl);
+
 const galleryHeading = document.createElement("h1");
 galleryHeading.textContent = "Gallery — 所有商品卡";
 const galleryEl = document.createElement("div");
@@ -35,9 +40,9 @@ const detailHeading = document.createElement("h1");
 detailHeading.textContent = "Detail — 單一商品卡 + 編輯";
 const detailEl = document.createElement("div");
 
-app.append(galleryHeading, galleryEl, detailHeading, detailEl);
+app.append(statusEl, galleryHeading, galleryEl, detailHeading, detailEl);
 
-renderGallery(galleryEl, registry, "standard-product", hydratedProducts);
+renderGallery(galleryEl, registry, "standard-product", hydratedProducts, productStore);
 renderDetail(
   detailEl,
   "momo-grid-card",
