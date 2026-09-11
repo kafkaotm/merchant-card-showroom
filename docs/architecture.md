@@ -138,6 +138,19 @@ components.
   each card's own `render()`, not lifted into the base. List's
   "add to cart" button would also need to disable/hide when availability
   isn't `in-stock` — a List-specific behavior branch, not a base concern.
+- **Gallery and Detail don't cross-sync live within one page session.**
+  Editing a product in the Detail view updates that view's own card
+  immediately (verified live in a browser) and persists to localStorage,
+  but the Gallery's rendering of the same product — built once at boot
+  from a snapshot array, not subscribed to the store — won't show the
+  edit until the page reloads and rehydrates from persistence. Confirmed
+  this exact behavior live: edited price in Detail, Gallery kept the old
+  value; reloaded, both showed the new one. Real state-consistency gap
+  *within a session*, left as-is deliberately — fixing it means
+  `renderGallery` subscribing per rendered card, which changes its
+  existing (tested) contract from "takes a products array" to "takes a
+  live store", for a scenario (edit in Detail, watch Gallery update
+  without reloading) this project doesn't otherwise need.
 - **Untested: multiple simultaneous subscribers on the same entity id.**
   `entity-store`'s fan-out (`listeners.get(id)?.forEach(...)`) is
   Set-based and should support any number of listeners per id, but no

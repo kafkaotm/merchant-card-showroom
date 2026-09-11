@@ -3,12 +3,18 @@ import type { Product } from "../core/product";
 
 type Registry = ReturnType<typeof createCardRegistry<unknown, string>>;
 
-function createCardElement(tagName: string, product: Product): HTMLElement {
-  const el = document.createElement(tagName);
+// Exported so the detail/editor view can push a live update onto an
+// already-mounted card element, not just set attributes at creation time.
+export function applyProductAttributes(el: HTMLElement, product: Product): void {
   el.setAttribute("product-title", product.title);
   el.setAttribute("price", String(product.price));
   el.setAttribute("rating", String(product.rating));
   el.setAttribute("review-count", String(product.reviewCount));
+}
+
+function createCardElement(tagName: string, product: Product): HTMLElement {
+  const el = document.createElement(tagName);
+  applyProductAttributes(el, product);
   return el;
 }
 

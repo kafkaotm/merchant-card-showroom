@@ -4,12 +4,14 @@ import { BaseProductCard } from "./base-card";
 
 @customElement("momo-grid-card")
 export class MomoGridCard extends BaseProductCard {
-  static styles = css`
-    :host {
-      display: block;
-      font-family: system-ui, sans-serif;
-    }
-  `;
+  static styles = [
+    BaseProductCard.styles,
+    css`
+      :host {
+        width: 220px;
+      }
+    `,
+  ];
 
   render() {
     return html`
