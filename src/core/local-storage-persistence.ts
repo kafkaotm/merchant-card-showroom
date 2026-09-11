@@ -3,16 +3,18 @@ export function createLocalStoragePersistence<T>(namespace: string) {
 
   return {
     save(id: string, value: T): void {
-      localStorage.setItem(keyFor(id), JSON.stringify(value));
+      try {
+        localStorage.setItem(keyFor(id), JSON.stringify(value));
+      } catch (error) {
+        console.warn(`Could not persist "${keyFor(id)}" (storage full or unavailable).`, error);
+      }
     },
     load(id: string): T | undefined {
-      const raw = localStorage.getItem(keyFor(id));
-      if (raw === null) return undefined;
-
       try {
-        return JSON.parse(raw) as T;
+        const raw = localStorage.getItem(keyFor(id));
+        return raw === null ? undefined : (JSON.parse(raw) as T);
       } catch (error) {
-        console.warn(`Discarding corrupted localStorage value for "${keyFor(id)}".`, error);
+        console.warn(`Discarding unreadable localStorage value for "${keyFor(id)}".`, error);
         return undefined;
       }
     },

@@ -32,6 +32,34 @@ describe("createLocalStoragePersistence", () => {
     expect(persistence.load("p1")).toBeUndefined();
   });
 
+  it("does not throw when the underlying storage read itself throws", () => {
+    const persistence = createLocalStoragePersistence<Product>("products");
+    const originalGetItem = Storage.prototype.getItem;
+    Storage.prototype.getItem = () => {
+      throw new DOMException("blocked", "SecurityError");
+    };
+
+    try {
+      expect(persistence.load("p1")).toBeUndefined();
+    } finally {
+      Storage.prototype.getItem = originalGetItem;
+    }
+  });
+
+  it("does not throw when the underlying storage write itself throws", () => {
+    const persistence = createLocalStoragePersistence<Product>("products");
+    const originalSetItem = Storage.prototype.setItem;
+    Storage.prototype.setItem = () => {
+      throw new DOMException("quota exceeded", "QuotaExceededError");
+    };
+
+    try {
+      expect(() => persistence.save("p1", { id: "p1", title: "x" })).not.toThrow();
+    } finally {
+      Storage.prototype.setItem = originalSetItem;
+    }
+  });
+
   it("namespaces keys so two persistence instances don't collide", () => {
     const products = createLocalStoragePersistence<Product>("products");
     const deals = createLocalStoragePersistence<Product>("deals");
