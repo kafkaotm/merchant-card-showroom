@@ -77,10 +77,18 @@ components.
   straight to a standard custom element with no wrapper — so this is a
   "framework can't do it" claim we don't make; it's a "this path has the
   least indirection" choice.)
-- **No CSS framework in the card bundle.** Cards ship as a dependency for
-  other pages to embed; bundling utility-class CSS would leak into or
-  bloat the consumer page. Plain CSS + custom properties/parts inside
-  Shadow DOM keeps the bundle self-contained.
+- **No CSS framework in the card bundle.** The blocking reason is
+  mechanical, not stylistic: Tailwind works by matching class names
+  against a global stylesheet, but each card's styles live inside its own
+  Shadow DOM, which by design isn't reached by an outer page's
+  stylesheet. A consumer page loading Tailwind wouldn't style the card's
+  internals at all without extra plumbing (constructable stylesheets or
+  similar) — so adopting it would mean either giving up Shadow DOM
+  encapsulation or building that plumbing for a component with maybe a
+  dozen lines of actual CSS. Separately, bundling utility-class CSS into
+  a dependency other pages embed would also bloat/leak into the consumer
+  page even where it did apply. Plain CSS + custom properties/parts
+  keeps the bundle self-contained either way.
 - **Single package, two Vite build targets, not a monorepo.** There are
   exactly two build outputs (the card library, the showroom app). A
   monorepo with separate packages would be structure for a scale this
