@@ -2,7 +2,9 @@
 
 Analysis + reusable implementation of real momo product card types (mocked
 front-end only, no real API calls). Scope and rationale: see
-[`docs/architecture.md`](docs/architecture.md).
+[`docs/architecture.md`](docs/architecture.md). For how the design actually
+got decided — where the maintainer redirected the agent's proposals and
+why — see [`docs/collaboration-log.md`](docs/collaboration-log.md).
 
 Status: scaffold only — quickstart commands below will be filled in as each
 piece lands.
