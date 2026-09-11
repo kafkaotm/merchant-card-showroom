@@ -1,0 +1,16 @@
+[
+  {
+    "id": "p1",
+    "title": "【ASUS 華碩】15.6吋Core7輕薄筆電-藍 (VivoBook X1504VA/Core7-150U/16G/1TB SSD/W11)",
+    "price": 27999,
+    "rating": 4.5,
+    "reviewCount": 364
+  },
+  {
+    "id": "p2",
+    "title": "【ASUS 華碩】16吋i5 1TB GeForce RTX5060電競筆電(FX608JMR/i5-14450HX/16G/1T/W11)",
+    "price": 49999,
+    "rating": 4.5,
+    "reviewCount": 127
+  }
+]
