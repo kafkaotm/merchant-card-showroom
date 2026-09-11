@@ -17,7 +17,15 @@ export function createEntityStore<T>() {
       idListeners.add(listener);
       listeners.set(id, idListeners);
 
-      return () => idListeners.delete(listener);
+      return () => {
+        idListeners.delete(listener);
+        if (idListeners.size === 0) {
+          listeners.delete(id);
+        }
+      };
+    },
+    subscribedIdCount(): number {
+      return listeners.size;
     },
   };
 }

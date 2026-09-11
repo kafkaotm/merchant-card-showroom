@@ -52,5 +52,16 @@ describe("createEntityStore", () => {
 
       expect(received).toEqual([]);
     });
+
+    it("stops tracking an id once its last subscriber unsubscribes (no leak)", () => {
+      const store = createEntityStore<Product>();
+      const unsubscribe = store.subscribe("p1", () => {});
+
+      expect(store.subscribedIdCount()).toBe(1);
+
+      unsubscribe();
+
+      expect(store.subscribedIdCount()).toBe(0);
+    });
   });
 });

@@ -110,13 +110,20 @@ components.
   `resolveDeal(deal, products)` view-model mapper living in the showroom
   app (not the card library), and a second `createEntityStore<Deal>()`
   instance. No changes needed to `entity-store.ts` or `card-registry.ts`.
-- **Persistence** — `entity-store` has no localStorage-backed adapter
-  yet; next core-layer cycle.
-- **Live/short-video card** — considered and set aside (see prior
-  design discussion in commit history / PR conversation); weakest
-  evidence of a genuinely distinct schema versus Grid/List. Candidate if
-  time remains after Deal.
+- **Live/short-video card** — considered and set aside (see
+  `docs/collaboration-log.md`); weakest evidence of a genuinely distinct
+  schema versus Grid/List. Candidate if time remains after Deal.
 - **Testing scope** — unit tests only, targeting the logic with real
   risk (store, registry, resolver, validation). No e2e/visual regression
   suite; not worth it at this scope, called out explicitly rather than
   silently skipped.
+- **Untested: multiple simultaneous subscribers on the same entity id.**
+  `entity-store`'s fan-out (`listeners.get(id)?.forEach(...)`) is
+  Set-based and should support any number of listeners per id, but no
+  test currently subscribes two listeners to the same id and asserts
+  both get notified — only single-subscriber and cross-id isolation are
+  covered. A regression that only notified the first listener would slip
+  through today. Noted rather than fixed now; low risk (the fan-out is a
+  three-line `forEach`) but real, since the Editor panel + a standalone
+  card both watching the same product is exactly this shape once it's
+  built.
